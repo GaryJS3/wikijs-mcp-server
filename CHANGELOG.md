@@ -13,10 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Nothing yet
 
 ### Changed
-- Nothing yet
+- README now points Claude Code users to [wikijs-plugin](https://github.com/markus-michalski/wikijs-plugin) as the recommended install path; this repo continues to receive fixes and remains the way to run the server for any other MCP client
 
 ### Deprecated
-- Nothing yet
+- Manual clone/build/config install for Claude Code usage — superseded by wikijs-plugin's marketplace install
 
 ### Removed
 - Nothing yet

@@ -1,6 +1,19 @@
 # Wiki.js MCP Server
 
-**Model Context Protocol Server for Wiki.js integration in Claude Code** - Create and manage wiki pages directly from your AI assistant.
+**Model Context Protocol Server for Wiki.js integration** - Create and manage wiki pages directly from your AI assistant.
+
+> **Using this from Claude Code?** Use [wikijs-plugin](https://github.com/markus-michalski/wikijs-plugin)
+> instead — it combines this server (ported to Python) with a `docs-wiki` skill into a single
+> plugin installable via the Claude Code marketplace mechanism, no manual clone/build/config
+> steps. Config moves from this repo's `.env` to `~/.wikijs-plugin/.env` (set up via
+> `/wikijs-plugin:setup`); the runtime changes from Node.js 18+ to Python 3.11+; tool names
+> (`wikijs_create_page`, ...) are unchanged. This repo continues to receive fixes and remains
+> the way to run the server directly (see Quick Start below) for any MCP client other than
+> Claude Code.
+>
+> **Migrating an existing install:** copy `~/.claude/mcp-servers/wikijs/.env` to
+> `~/.wikijs-plugin/.env` (same keys, same values — no new API token needed), then remove the
+> old `wikijs` entry from `~/.claude.json` so the tools aren't registered twice.
 
 ## v2.0.0 - Major Refactoring
 
@@ -27,12 +40,14 @@ The comprehensive guide includes:
 
 ## Quick Start
 
+For any MCP client other than Claude Code (see the note above for Claude Code):
+
 ```bash
 # 1. Clone repository
-git clone https://github.com/markus-michalski/wikijs-mcp-server.git ~/.claude/mcp-servers/wikijs
+git clone https://github.com/markus-michalski/wikijs-mcp-server.git
+cd wikijs-mcp-server
 
 # 2. Install dependencies
-cd ~/.claude/mcp-servers/wikijs
 npm install
 
 # 3. Build TypeScript
@@ -42,7 +57,7 @@ npm run build
 cp .env.example .env
 # Edit .env with your Wiki.js API credentials
 
-# 5. Add to Claude Code config and restart
+# 5. Point your MCP client's config at dist/index.js and restart it
 ```
 
 ## Requirements
