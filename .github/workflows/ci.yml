@@ -34,6 +34,9 @@ jobs:
       - name: TypeScript Type Check
         run: npm run typecheck
 
+      - name: Unit and transport tests
+        run: npm test
+
       - name: Verify dist output
         run: |
           test -f dist/index.js || { echo "Error: dist/index.js not found after build"; exit 1; }
@@ -74,3 +77,14 @@ jobs:
           echo "Checking CHANGELOG.md format..."
           grep -q "## \[Unreleased\]" CHANGELOG.md || { echo "Error: [Unreleased] section missing"; exit 1; }
           echo "✓ CHANGELOG format valid"
+
+  docker-validation:
+    name: Docker Build Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build --tag wikijs-mcp-server:ci .

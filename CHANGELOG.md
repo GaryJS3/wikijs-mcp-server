@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Nothing yet
+- Transport-independent MCP server factory
+- Official Streamable HTTP transport with `/mcp` and `/health` endpoints
+- Optional bearer authentication and host/origin restrictions
+- Multi-stage Docker image, Compose deployment, and HTTP transport tests
 
 ### Changed
 - README now points Claude Code users to [wikijs-plugin](https://github.com/markus-michalski/wikijs-plugin) as the recommended install path; this repo continues to receive fixes and remains the way to run the server for any other MCP client
@@ -25,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Nothing yet
 
 ### Security
-- Nothing yet
+- `/mcp` never logs bearer tokens; non-loopback HTTP binding requires `MCP_ALLOWED_HOSTS`
 
 ## [2.0.1] - 2026-03-20
 
