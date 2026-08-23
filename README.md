@@ -84,6 +84,8 @@ Authorization: Bearer <token>
 
 The repository includes a multi-stage, non-root `Dockerfile` and `compose.yaml`. It can be deployed with Dockhand's **Deploy from Git** workflow. Set the Compose environment values in Dockhand or an adjacent `.env` file; do not put real credentials in the repository.
 
+The Compose service joins the external `proxied-network` so a same-host Wiki.js deployment can be reached as `http://wiki/graphql`. If deploying outside that network, remove or adapt that network entry and provide a reachable `WIKIJS_API_URL` instead.
+
 ```bash
 docker compose up -d --build
 docker compose ps
