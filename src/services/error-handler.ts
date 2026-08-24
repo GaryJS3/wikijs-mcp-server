@@ -9,6 +9,7 @@ export interface ToolErrorResponse {
     type: 'text';
     text: string;
   }>;
+  structuredContent: Record<string, unknown>;
   isError: true;
 }
 
@@ -31,6 +32,12 @@ export function handleToolError(error: unknown, toolName: string): ToolErrorResp
   // Log error to stderr for debugging (stdio servers should log to stderr)
   console.error(`[${toolName}] Error:`, errorMessage);
 
+  const structuredContent = {
+    success: false as const,
+    error: errorMessage,
+    tool: toolName,
+  };
+
   return {
     content: [
       {
@@ -46,6 +53,7 @@ export function handleToolError(error: unknown, toolName: string): ToolErrorResp
         ),
       },
     ],
+    structuredContent,
     isError: true,
   };
 }
@@ -53,23 +61,20 @@ export function handleToolError(error: unknown, toolName: string): ToolErrorResp
 /**
  * Helper to create success response
  */
-export function successResponse(data: Record<string, unknown>): {
+export function successResponse<T extends Record<string, unknown>>(data: T): {
   content: Array<{ type: 'text'; text: string }>;
+  structuredContent: Record<string, unknown>;
 } {
+  const structuredContent = { success: true as const, ...data };
+
   return {
     content: [
       {
         type: 'text',
-        text: JSON.stringify(
-          {
-            success: true,
-            ...data,
-          },
-          null,
-          2
-        ),
+        text: JSON.stringify(structuredContent, null, 2),
       },
     ],
+    structuredContent,
   };
 }
 

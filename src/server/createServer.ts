@@ -30,6 +30,22 @@ import {
   patchPageToolDefinition,
   handlePatchPage,
 } from '../tools/index.js';
+import {
+  createPageOutputSchema,
+  getPageOutputSchema,
+  listPagesOutputSchema,
+  searchPagesOutputSchema,
+  updatePageOutputSchema,
+  deletePageOutputSchema,
+  movePageOutputSchema,
+  getTreeOutputSchema,
+  listTagsOutputSchema,
+  searchTagsOutputSchema,
+  pageHistoryOutputSchema,
+  pageVersionOutputSchema,
+  restorePageVersionOutputSchema,
+  patchPageOutputSchema,
+} from '../schemas/outputs.js';
 
 export const SERVER_NAME = 'wikijs-mcp-server';
 export const SERVER_VERSION = '2.1.0';
@@ -38,20 +54,20 @@ export const SERVER_VERSION = '2.1.0';
 export function createServer(wikiClient: WikiJsClient): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
 
-  server.tool(createPageToolDefinition.name, createPageToolDefinition.description, createPageToolDefinition.inputSchema.shape, async (args) => handleCreatePage(wikiClient, args));
-  server.tool(getPageToolDefinition.name, getPageToolDefinition.description, getPageToolDefinition.inputSchema.shape, async (args) => handleGetPage(wikiClient, args));
-  server.tool(listPagesToolDefinition.name, listPagesToolDefinition.description, listPagesToolDefinition.inputSchema.shape, async (args) => handleListPages(wikiClient, args));
-  server.tool(searchPagesToolDefinition.name, searchPagesToolDefinition.description, searchPagesToolDefinition.inputSchema.shape, async (args) => handleSearchPages(wikiClient, args));
-  server.tool(updatePageToolDefinition.name, updatePageToolDefinition.description, updatePageToolDefinition.inputSchema.shape, async (args) => handleUpdatePage(wikiClient, args));
-  server.tool(deletePageToolDefinition.name, deletePageToolDefinition.description, deletePageToolDefinition.inputSchema.shape, async (args) => handleDeletePage(wikiClient, args));
-  server.tool(movePageToolDefinition.name, movePageToolDefinition.description, movePageToolDefinition.inputSchema.shape, async (args) => handleMovePage(wikiClient, args));
-  server.tool(getTreeToolDefinition.name, getTreeToolDefinition.description, getTreeToolDefinition.inputSchema.shape, async (args) => handleGetTree(wikiClient, args));
-  server.tool(listTagsToolDefinition.name, listTagsToolDefinition.description, listTagsToolDefinition.inputSchema.shape, async (args) => handleListTags(wikiClient, args));
-  server.tool(searchTagsToolDefinition.name, searchTagsToolDefinition.description, searchTagsToolDefinition.inputSchema.shape, async (args) => handleSearchTags(wikiClient, args));
-  server.tool(pageHistoryToolDefinition.name, pageHistoryToolDefinition.description, pageHistoryToolDefinition.inputSchema.shape, async (args) => handlePageHistory(wikiClient, args));
-  server.tool(pageVersionToolDefinition.name, pageVersionToolDefinition.description, pageVersionToolDefinition.inputSchema.shape, async (args) => handlePageVersion(wikiClient, args));
-  server.tool(restorePageVersionToolDefinition.name, restorePageVersionToolDefinition.description, restorePageVersionToolDefinition.inputSchema.shape, async (args) => handleRestorePageVersion(wikiClient, args));
-  server.tool(patchPageToolDefinition.name, patchPageToolDefinition.description, patchPageToolDefinition.inputSchema.shape, async (args) => handlePatchPage(wikiClient, args));
+  server.registerTool(createPageToolDefinition.name, { description: createPageToolDefinition.description, inputSchema: createPageToolDefinition.inputSchema, outputSchema: createPageOutputSchema, annotations: createPageToolDefinition.annotations }, async (args) => handleCreatePage(wikiClient, args));
+  server.registerTool(getPageToolDefinition.name, { description: getPageToolDefinition.description, inputSchema: getPageToolDefinition.inputSchema, outputSchema: getPageOutputSchema, annotations: getPageToolDefinition.annotations }, async (args) => handleGetPage(wikiClient, args));
+  server.registerTool(listPagesToolDefinition.name, { description: listPagesToolDefinition.description, inputSchema: listPagesToolDefinition.inputSchema, outputSchema: listPagesOutputSchema, annotations: listPagesToolDefinition.annotations }, async (args) => handleListPages(wikiClient, args));
+  server.registerTool(searchPagesToolDefinition.name, { description: searchPagesToolDefinition.description, inputSchema: searchPagesToolDefinition.inputSchema, outputSchema: searchPagesOutputSchema, annotations: searchPagesToolDefinition.annotations }, async (args) => handleSearchPages(wikiClient, args));
+  server.registerTool(updatePageToolDefinition.name, { description: updatePageToolDefinition.description, inputSchema: updatePageToolDefinition.inputSchema, outputSchema: updatePageOutputSchema, annotations: updatePageToolDefinition.annotations }, async (args) => handleUpdatePage(wikiClient, args));
+  server.registerTool(deletePageToolDefinition.name, { description: deletePageToolDefinition.description, inputSchema: deletePageToolDefinition.inputSchema, outputSchema: deletePageOutputSchema, annotations: deletePageToolDefinition.annotations }, async (args) => handleDeletePage(wikiClient, args));
+  server.registerTool(movePageToolDefinition.name, { description: movePageToolDefinition.description, inputSchema: movePageToolDefinition.inputSchema, outputSchema: movePageOutputSchema, annotations: movePageToolDefinition.annotations }, async (args) => handleMovePage(wikiClient, args));
+  server.registerTool(getTreeToolDefinition.name, { description: getTreeToolDefinition.description, inputSchema: getTreeToolDefinition.inputSchema, outputSchema: getTreeOutputSchema, annotations: getTreeToolDefinition.annotations }, async (args) => handleGetTree(wikiClient, args));
+  server.registerTool(listTagsToolDefinition.name, { description: listTagsToolDefinition.description, inputSchema: listTagsToolDefinition.inputSchema, outputSchema: listTagsOutputSchema, annotations: listTagsToolDefinition.annotations }, async (args) => handleListTags(wikiClient, args));
+  server.registerTool(searchTagsToolDefinition.name, { description: searchTagsToolDefinition.description, inputSchema: searchTagsToolDefinition.inputSchema, outputSchema: searchTagsOutputSchema, annotations: searchTagsToolDefinition.annotations }, async (args) => handleSearchTags(wikiClient, args));
+  server.registerTool(pageHistoryToolDefinition.name, { description: pageHistoryToolDefinition.description, inputSchema: pageHistoryToolDefinition.inputSchema, outputSchema: pageHistoryOutputSchema, annotations: pageHistoryToolDefinition.annotations }, async (args) => handlePageHistory(wikiClient, args));
+  server.registerTool(pageVersionToolDefinition.name, { description: pageVersionToolDefinition.description, inputSchema: pageVersionToolDefinition.inputSchema, outputSchema: pageVersionOutputSchema, annotations: pageVersionToolDefinition.annotations }, async (args) => handlePageVersion(wikiClient, args));
+  server.registerTool(restorePageVersionToolDefinition.name, { description: restorePageVersionToolDefinition.description, inputSchema: restorePageVersionToolDefinition.inputSchema, outputSchema: restorePageVersionOutputSchema, annotations: restorePageVersionToolDefinition.annotations }, async (args) => handleRestorePageVersion(wikiClient, args));
+  server.registerTool(patchPageToolDefinition.name, { description: patchPageToolDefinition.description, inputSchema: patchPageToolDefinition.inputSchema, outputSchema: patchPageOutputSchema, annotations: patchPageToolDefinition.annotations }, async (args) => handlePatchPage(wikiClient, args));
 
   return server;
 }

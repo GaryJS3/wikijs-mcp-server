@@ -7,7 +7,7 @@
 import { z } from 'zod';
 import type { WikiJsClient } from '../services/client.js';
 import { listPagesSchema, type ListPagesInput } from '../schemas/index.js';
-import { handleToolError } from '../services/error-handler.js';
+import { handleToolError, successResponse } from '../services/error-handler.js';
 import { DEFAULT_PAGE_LIMIT } from '../constants.js';
 
 export const listPagesToolDefinition = {
@@ -66,28 +66,16 @@ export async function handleListPages(
 
     const hasMore = offset + pageList.length < total;
 
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(
-            {
-              success: true,
-              pages: pageList,
-              pagination: {
-                limit,
-                offset,
-                total_count: total,
-                has_more: hasMore,
-                ...(hasMore ? { next_offset: offset + pageList.length } : {}),
-              },
-            },
-            null,
-            2
-          ),
-        },
-      ],
-    };
+    return successResponse({
+      pages: pageList,
+      pagination: {
+        limit,
+        offset,
+        total_count: total,
+        has_more: hasMore,
+        ...(hasMore ? { next_offset: offset + pageList.length } : {}),
+      },
+    });
   } catch (error) {
     return handleToolError(error, 'wikijs_list_pages');
   }

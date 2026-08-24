@@ -97,10 +97,12 @@ describe('Streamable HTTP transport', () => {
       'wikijs_restore_page_version',
       'wikijs_patch_page',
     ]);
+    expect(tools.tools.every((tool) => tool.outputSchema)).toBe(true);
 
     const result = await client.callTool({ name: 'wikijs_get_page', arguments: { id: 42 } });
     expect(result.isError).not.toBe(true);
     expect(JSON.parse((result.content[0] as { text: string }).text).page.title).toBe('Test page');
+    expect(result.structuredContent).toMatchObject({ success: true, page: { title: 'Test page' } });
     await client.close();
   });
 

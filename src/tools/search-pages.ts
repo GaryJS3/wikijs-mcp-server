@@ -7,7 +7,7 @@
 import { z } from 'zod';
 import type { WikiJsClient } from '../services/client.js';
 import { searchPagesSchema, type SearchPagesInput } from '../schemas/index.js';
-import { handleToolError } from '../services/error-handler.js';
+import { handleToolError, successResponse } from '../services/error-handler.js';
 
 export const searchPagesToolDefinition = {
   name: 'wikijs_search_pages',
@@ -46,29 +46,17 @@ export async function handleSearchPages(
 
     const results = await client.searchPages(validated.query, validated.locale ?? null);
 
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(
-            {
-              success: true,
-              totalHits: results.totalHits,
-              suggestions: results.suggestions,
-              results: results.results.map((r) => ({
-                id: r.id,
-                title: r.title,
-                path: r.path,
-                description: r.description,
-                locale: r.locale,
-              })),
-            },
-            null,
-            2
-          ),
-        },
-      ],
-    };
+    return successResponse({
+      totalHits: results.totalHits,
+      suggestions: results.suggestions,
+      results: results.results.map((r) => ({
+        id: r.id,
+        title: r.title,
+        path: r.path,
+        description: r.description,
+        locale: r.locale,
+      })),
+    });
   } catch (error) {
     return handleToolError(error, 'wikijs_search_pages');
   }
