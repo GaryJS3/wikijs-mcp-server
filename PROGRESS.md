@@ -1,12 +1,12 @@
 # Wiki.js MCP Server — Progress
 
-Updated: 2026-08-23
+Updated: 2026-08-24
 
 ## Current state
 
 The first deployment milestone is implemented and pushed to `main`. The repository now supports both stdio and Streamable HTTP MCP transports, Docker/Compose deployment, authentication and host/origin checks, and the Wiki.js tools through a shared server factory.
 
-The Dockhand container is now online and healthy in `Containers External` (environment ID `2`). The Hawser agent runs directly on that host as root; it is not a container.
+The Dockhand container is online and healthy in `Containers External` (environment ID `2`). Release `2.1.0` is deployed. The Hawser agent runs directly on that host as root; it is not a container.
 
 ## Completed
 
@@ -43,11 +43,12 @@ The following checks passed locally:
 - `npm run build`
 - `git diff --check`
 - Compiled HTTP smoke test: `/health` returned HTTP 200
-- Live Dockhand `/health`: HTTP 200, server version `2.0.1`
-- Live MCP initialize/tool listing: all 7 tools returned successfully
+- Live Dockhand `/health`: HTTP 200, server version `2.1.0`
+- Live MCP initialize/tool listing: all 14 tools returned successfully
 - Live read-only Wiki.js call: passed; returned the `Welcome` page and reported 12 total pages
 - Guarded patch tests verify zero/multiple-match failures do not call the update mutation.
 - Patch and restore default to dry-run; restore additionally requires `confirm: true`.
+- Live disposable-page validation passed: tree/tag discovery, dry-run patch, applied patch, history/version retrieval, dry-run restore, applied restore, restored-content verification, and cleanup.
 
 The local Docker image build was not run successfully because the Docker Desktop Linux engine was unavailable. CI includes Docker build validation.
 
@@ -70,6 +71,8 @@ Configured Git stack:
 - Git sync: reached commit `39b97e7`
 - Auto-update: daily at `03:00`
 - Container: `wikijs-mcp`, running and healthy
+- Deployed release: `2.1.0` / image `wikijs-mcp-wikijs-mcp:2.1.0`
+- Deployed commit: `0dd6d9c`
 - Published endpoint: `http://10.10.0.64:3200`
 - Docker network address: `172.22.0.10` on `proxied-network`
 
@@ -141,7 +144,7 @@ Completion evidence should record the deployed commit, container health, authent
 
 ### Priority 1 — Navigation and discovery
 
-The implementation slice is complete locally; the remaining item is a live test-instance smoke test. The tools use Wiki.js `pages.tree`, `pages.tags`, and `pages.searchTags` GraphQL operations. Keep the first release read-only and include:
+The implementation and live test-instance smoke test are complete. The tools use Wiki.js `pages.tree`, `pages.tags`, and `pages.searchTags` GraphQL operations. The next work is release follow-through and broader client acceptance.
 
 - Optional locale and parent/path filtering where supported.
 - Predictable empty-tree and malformed-response handling.
@@ -153,7 +156,7 @@ Tag discovery should follow as a separate focused slice. Site-information toolin
 
 ### Priority 2 — Safer editing and history
 
-Page history/version reads, dry-run previews, guarded patching, and confirmed revision restore are implemented locally. The patch operation requires exactly one expected-old-text match and performs no mutation on zero or multiple matches. Restore requires `confirm: true` and defaults to dry-run. Remaining work is live validation against a disposable page.
+Page history/version reads, dry-run previews, guarded patching, and confirmed revision restore are implemented and live-validated. The patch operation requires exactly one expected-old-text match and performs no mutation on zero or multiple matches. Restore requires `confirm: true` and defaults to dry-run.
 
 ### Priority 3 — Production hardening
 

@@ -6,7 +6,7 @@ Provide a reliable Wiki.js MCP server that works locally over stdio and remotely
 
 ## Milestone 1 — Transport and deployment foundation
 
-Status: implemented; live Dockhand deployment pending.
+Status: implemented and deployed; ongoing operational hardening remains.
 
 - [x] Preserve the existing seven Wiki.js tools.
 - [x] Share tool registration between stdio and HTTP transports.
@@ -32,10 +32,10 @@ Status: live and healthy; documentation and security follow-through remain.
 - [x] Deploy stack `wikijs-mcp` in Dockhand environment `Containers External`.
 - [x] Verify health, MCP initialization, tool listing, and a read-only Wiki.js request.
 - [ ] Rotate the Wiki.js API token that was exposed during deployment testing.
-- [ ] Record the final endpoint, authentication mode, redeployment procedure, and health checks in the README.
+- [x] Record the final endpoint, authentication mode, redeployment procedure, and health checks in the README.
 - [ ] Decide whether the service remains trusted-LAN-only or will be exposed through a reverse proxy.
 - [ ] Before any broader exposure, require TLS, a strong `MCP_AUTH_TOKEN`, and narrow host/origin allow lists.
-- [ ] Commit and push the corrected README plus `ROADMAP.md` and `PROGRESS.md`, then redeploy and repeat the read-only smoke test.
+- [x] Commit and push the corrected README plus `ROADMAP.md` and `PROGRESS.md`, then redeploy and repeat the read-only smoke test.
 
 Acceptance gate:
 
@@ -50,7 +50,7 @@ Acceptance gate:
 - [x] Add tag listing and tag-based page discovery, using the smallest useful tool surface supported by the API.
 - [ ] Add site information only where the GraphQL API provides stable, non-administrative fields.
 - [x] Add unit tests for validation, empty results, locale handling, pagination, and upstream GraphQL failures.
-- [ ] Add read-only integration coverage against a real test Wiki.js instance.
+- [x] Add read-only integration coverage against a real test Wiki.js instance.
 - [x] Update tool documentation and README; evaluation/changelog updates remain part of release preparation.
 
 Acceptance gate:
@@ -66,7 +66,7 @@ Acceptance gate:
 - [x] Add `wikijs_patch_page` with required expected-old-text checks.
 - [x] Fail without mutation when expected text matches zero or multiple locations.
 - [x] Return a before/after preview in dry-run mode before applying a patch.
-- [ ] Require a disposable test page for live mutation tests covering patch, update, move, restore, and delete behavior.
+- [x] Require and complete disposable-page live mutation tests covering patch, restore, and delete behavior.
 - [x] Add revision restore only after confirming the Wiki.js mutation and revision identifiers; live disposable-page validation remains.
 
 Acceptance gate:
