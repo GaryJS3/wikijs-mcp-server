@@ -64,7 +64,7 @@ describe('Streamable HTTP transport', () => {
   it('returns a small unauthenticated health response', async () => {
     const response = await fetch(`${baseUrl}/health`);
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ status: 'ok', service: 'wikijs-mcp-server', version: '2.0.1' });
+    expect(await response.json()).toEqual({ status: 'ok', service: 'wikijs-mcp-server', version: '2.1.0' });
   });
 
   it('rejects missing and invalid bearer tokens', async () => {
@@ -73,7 +73,7 @@ describe('Streamable HTTP transport', () => {
     expect((await fetch(`${baseUrl}/mcp`, { ...request, headers: { ...request.headers, authorization: 'Bearer wrong' } })).status).toBe(401);
   });
 
-  it('lists all seven tools and invokes a read-only tool through MCP HTTP', async () => {
+  it('lists all tools and invokes a read-only tool through MCP HTTP', async () => {
     const client = new Client({ name: 'transport-test-client', version: '1.0.0' });
     const transport = new StreamableHTTPClientTransport(new URL(`${baseUrl}/mcp`), {
       requestInit: { headers: { authorization: 'Bearer test-token' } },
@@ -89,6 +89,13 @@ describe('Streamable HTTP transport', () => {
       'wikijs_update_page',
       'wikijs_delete_page',
       'wikijs_move_page',
+      'wikijs_get_tree',
+      'wikijs_list_tags',
+      'wikijs_search_tags',
+      'wikijs_page_history',
+      'wikijs_get_page_version',
+      'wikijs_restore_page_version',
+      'wikijs_patch_page',
     ]);
 
     const result = await client.callTool({ name: 'wikijs_get_page', arguments: { id: 42 } });

@@ -44,6 +44,64 @@ export interface SearchResponse {
   totalHits: number;
 }
 
+export interface PageTag {
+  id: number;
+  tag: string;
+  title?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PageTreeItem {
+  id: number;
+  path: string;
+  depth: number;
+  title: string;
+  isPrivate: boolean;
+  isFolder: boolean;
+  privateNS?: string | null;
+  parent?: number | null;
+  pageId?: number | null;
+  locale: string;
+}
+
+export interface PageHistoryEntry {
+  versionId: number;
+  versionDate: string;
+  authorId: number;
+  authorName: string;
+  actionType: string;
+  valueBefore?: string | null;
+  valueAfter?: string | null;
+}
+
+export interface PageHistoryResult {
+  trail: PageHistoryEntry[];
+  total: number;
+}
+
+export interface PageVersion {
+  action: string;
+  authorId: string;
+  authorName: string;
+  content: string;
+  contentType: string;
+  createdAt: string;
+  versionDate: string;
+  description: string;
+  editor: string;
+  isPrivate: boolean;
+  isPublished: boolean;
+  locale: string;
+  pageId: number;
+  path: string;
+  publishEndDate: string;
+  publishStartDate: string;
+  tags: string[];
+  title: string;
+  versionId: number;
+}
+
 export interface ApiResponseResult {
   succeeded: boolean;
   errorCode: number;

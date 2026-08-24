@@ -10,12 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+- Wiki.js page-tree and tag discovery tools: `wikijs_get_tree`, `wikijs_list_tags`, and `wikijs_search_tags`.
+- Read-only page revision tools: `wikijs_page_history` and `wikijs_get_page_version`.
+- Guarded exact-match text replacement through `wikijs_patch_page`.
+- Dry-run-by-default behavior for patching and revision restore, with explicit confirmation required for restore.
+
+### Changed
 - Transport-independent MCP server factory
 - Official Streamable HTTP transport with `/mcp` and `/health` endpoints
 - Optional bearer authentication and host/origin restrictions
 - Multi-stage Docker image, Compose deployment, and HTTP transport tests
 
-### Changed
 - README now points Claude Code users to [wikijs-plugin](https://github.com/markus-michalski/wikijs-plugin) as the recommended install path; this repo continues to receive fixes and remains the way to run the server for any other MCP client
 
 ### Deprecated

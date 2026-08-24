@@ -1,6 +1,6 @@
 # Wiki.js MCP Server
 
-Model Context Protocol server for managing Wiki.js pages through its GraphQL API. The existing seven `wikijs_*` tools work over local stdio and remote Streamable HTTP.
+Model Context Protocol server for managing Wiki.js pages through its GraphQL API. The Wiki.js tools work over local stdio and remote Streamable HTTP.
 
 ## Requirements
 
@@ -84,7 +84,7 @@ Authorization: Bearer <token>
 
 The repository includes a multi-stage, non-root `Dockerfile` and `compose.yaml`. It can be deployed with Dockhand's **Deploy from Git** workflow. Set the Compose environment values in Dockhand or an adjacent `.env` file; do not put real credentials in the repository.
 
-The Compose service joins the external `proxied-network` so a same-host Wiki.js deployment can be reached as `http://wiki/graphql`. If deploying outside that network, remove or adapt that network entry and provide a reachable `WIKIJS_API_URL` instead.
+The Compose service joins the external `proxied-network` so a same-host Wiki.js deployment can be reached as `http://wiki:3000/graphql`. If deploying outside that network, remove or adapt that network entry and provide a reachable `WIKIJS_API_URL` instead.
 
 ```bash
 docker compose up -d --build
@@ -105,6 +105,13 @@ For a public reverse-proxy deployment, configure `MCP_ALLOWED_HOSTS`, `MCP_ALLOW
 | `wikijs_search_pages` | Search Wiki.js pages. |
 | `wikijs_delete_page` | Delete a page. |
 | `wikijs_move_page` | Move a page to another path or locale. |
+| `wikijs_get_tree` | Browse the page hierarchy. |
+| `wikijs_list_tags` | List defined page tags. |
+| `wikijs_search_tags` | Search page tags. |
+| `wikijs_page_history` | List page revisions. |
+| `wikijs_get_page_version` | Retrieve one immutable page revision. |
+| `wikijs_patch_page` | Preview by default or replace exactly one expected text occurrence with a guarded update. |
+| `wikijs_restore_page_version` | Preview by default or restore a confirmed page revision. |
 
 ## Development
 

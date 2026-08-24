@@ -169,3 +169,59 @@ export const movePageSchema = z.object({
 });
 
 export type MovePageInput = z.infer<typeof movePageSchema>;
+
+// Page tree schema
+export const pageTreeSchema = z.object({
+  path: pagePathSchema.optional().describe('Optional tree path to browse'),
+  parent: pageIdSchema.optional().describe('Optional parent page ID'),
+  mode: z.enum(['FOLDERS', 'PAGES', 'ALL']).default('ALL').describe('Tree nodes to return'),
+  locale: localeSchema,
+  includeAncestors: z.boolean().default(false).describe('Include ancestors of the requested path'),
+});
+
+export type PageTreeInput = z.infer<typeof pageTreeSchema>;
+
+// Tag discovery schemas
+export const listTagsSchema = z.object({});
+export const searchTagsSchema = z.object({
+  query: z.string().min(1).max(100).describe('Tag prefix or search text'),
+});
+
+export type SearchTagsInput = z.infer<typeof searchTagsSchema>;
+
+// Revision schemas
+export const pageHistorySchema = z.object({
+  id: pageIdSchema,
+  offsetPage: z.number().int().min(0).default(0).describe('Revision page offset'),
+  offsetSize: z.number().int().min(1).max(100).default(20).describe('Maximum revisions to return'),
+});
+
+export type PageHistoryInput = z.infer<typeof pageHistorySchema>;
+
+export const pageVersionSchema = z.object({
+  pageId: pageIdSchema,
+  versionId: pageIdSchema,
+});
+
+export type PageVersionInput = z.infer<typeof pageVersionSchema>;
+
+// Safe text replacement schema
+export const patchPageSchema = z.object({
+  id: pageIdSchema.optional().describe('Page ID (optional if path is provided)'),
+  path: pagePathSchema.optional().describe('Page path (optional if id is provided)'),
+  locale: localeSchema,
+  expectedOldText: z.string().min(1).max(MAX_CONTENT_SIZE).describe('Text that must occur exactly once in the current page'),
+  replacement: z.string().max(MAX_CONTENT_SIZE).describe('Replacement text; may be empty to remove the matched text'),
+  dryRun: z.boolean().default(true).describe('Preview the replacement without changing Wiki.js (default: true)'),
+});
+
+export type PatchPageInput = z.infer<typeof patchPageSchema>;
+
+export const restorePageVersionSchema = z.object({
+  pageId: pageIdSchema,
+  versionId: pageIdSchema,
+  confirm: z.literal(true).describe('Must be true to acknowledge that restoring changes the live page'),
+  dryRun: z.boolean().default(true).describe('Preview the revision without restoring it (default: true)'),
+});
+
+export type RestorePageVersionInput = z.infer<typeof restorePageVersionSchema>;

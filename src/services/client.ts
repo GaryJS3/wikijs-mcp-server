@@ -12,6 +12,10 @@ import type {
   CreatePageParams,
   UpdatePageParams,
   ApiResponseResult,
+  PageTag,
+  PageTreeItem,
+  PageHistoryResult,
+  PageVersion,
 } from '../types.js';
 
 interface GraphQLResponse<T> {
@@ -22,6 +26,14 @@ interface GraphQLResponse<T> {
 export class WikiJsClient {
   private apiUrl: string;
   private apiToken: string;
+
+  private normalizePageTags(page: (Omit<WikiPage, 'tags'> & { tags?: Array<string | { tag: string }> }) | null): WikiPage | null {
+    if (!page) return null;
+    return {
+      ...page,
+      tags: page.tags?.map((tag) => typeof tag === 'string' ? tag : tag.tag) ?? [],
+    };
+  }
 
   constructor(apiUrl: string, apiToken: string) {
     this.apiUrl = apiUrl;
@@ -115,7 +127,7 @@ export class WikiJsClient {
   /**
    * Get a single page by ID
    */
-  async getPageById(id: number): Promise<WikiPage | null> {
+  async getPageById(id: number, truncate = true): Promise<WikiPage | null> {
     const query = `
       query($id: Int!) {
         pages {
@@ -130,16 +142,17 @@ export class WikiJsClient {
             locale
             createdAt
             updatedAt
+            tags { tag }
           }
         }
       }
     `;
 
-    const data = await this.query<{ pages: { single: WikiPage | null } }>(query, { id });
-    const page = data.pages.single;
+    const data = await this.query<{ pages: { single: (Omit<WikiPage, 'tags'> & { tags?: Array<{ tag: string }> }) | null } }>(query, { id });
+    const page = this.normalizePageTags(data.pages.single);
 
     // Truncate content if needed
-    if (page?.content && page.content.length > CHARACTER_LIMIT) {
+    if (truncate && page?.content && page.content.length > CHARACTER_LIMIT) {
       page.content =
         page.content.substring(0, CHARACTER_LIMIT) +
         `\n\n[Content truncated. Original length: ${page.content.length} chars. Use path-based access for full content.]`;
@@ -151,7 +164,7 @@ export class WikiJsClient {
   /**
    * Get a single page by path
    */
-  async getPageByPath(path: string, locale: string = 'en'): Promise<WikiPage | null> {
+  async getPageByPath(path: string, locale: string = 'en', truncate = true): Promise<WikiPage | null> {
     const query = `
       query($path: String!, $locale: String!) {
         pages {
@@ -166,16 +179,17 @@ export class WikiJsClient {
             locale
             createdAt
             updatedAt
+            tags { tag }
           }
         }
       }
     `;
 
-    const data = await this.query<{ pages: { singleByPath: WikiPage | null } }>(query, { path, locale });
-    const page = data.pages.singleByPath;
+    const data = await this.query<{ pages: { singleByPath: (Omit<WikiPage, 'tags'> & { tags?: Array<{ tag: string }> }) | null } }>(query, { path, locale });
+    const page = this.normalizePageTags(data.pages.singleByPath);
 
     // Truncate content if needed
-    if (page?.content && page.content.length > CHARACTER_LIMIT) {
+    if (truncate && page?.content && page.content.length > CHARACTER_LIMIT) {
       page.content =
         page.content.substring(0, CHARACTER_LIMIT) +
         `\n\n[Content truncated. Original length: ${page.content.length} chars]`;
@@ -216,6 +230,111 @@ export class WikiJsClient {
     }
 
     return results;
+  }
+
+  /** Get the navigable page tree. */
+  async getPageTree(
+    path: string | null = null,
+    parent: number | null = null,
+    mode: 'FOLDERS' | 'PAGES' | 'ALL' = 'ALL',
+    locale = 'en',
+    includeAncestors = false,
+  ): Promise<PageTreeItem[]> {
+    const query = `
+      query($path: String, $parent: Int, $mode: PageTreeMode!, $locale: String!, $includeAncestors: Boolean) {
+        pages {
+          tree(path: $path, parent: $parent, mode: $mode, locale: $locale, includeAncestors: $includeAncestors) {
+            id
+            path
+            depth
+            title
+            isPrivate
+            isFolder
+            privateNS
+            parent
+            pageId
+            locale
+          }
+        }
+      }
+    `;
+    const data = await this.query<{ pages: { tree: PageTreeItem[] | null } }>(query, {
+      path,
+      parent,
+      mode,
+      locale,
+      includeAncestors,
+    });
+    return data.pages.tree ?? [];
+  }
+
+  /** List tags defined by pages. */
+  async listTags(): Promise<PageTag[]> {
+    const data = await this.query<{ pages: { tags: PageTag[] } }>(`
+      query {
+        pages {
+          tags { id tag title createdAt updatedAt }
+        }
+      }
+    `);
+    return data.pages.tags;
+  }
+
+  /** Search page tags. */
+  async searchTags(searchQuery: string): Promise<string[]> {
+    const data = await this.query<{ pages: { searchTags: string[] } }>(`
+      query($query: String!) {
+        pages { searchTags(query: $query) }
+      }
+    `, { query: searchQuery });
+    return data.pages.searchTags;
+  }
+
+  /** List the revision trail for a page. */
+  async getPageHistory(id: number, offsetPage = 0, offsetSize = 20): Promise<PageHistoryResult> {
+    const data = await this.query<{ pages: { history: PageHistoryResult | null } }>(`
+      query($id: Int!, $offsetPage: Int, $offsetSize: Int) {
+        pages {
+          history(id: $id, offsetPage: $offsetPage, offsetSize: $offsetSize) {
+            trail { versionId versionDate authorId authorName actionType valueBefore valueAfter }
+            total
+          }
+        }
+      }
+    `, { id, offsetPage, offsetSize });
+    if (!data.pages.history) throw new Error(`Page history not found for ID: ${id}`);
+    return { trail: data.pages.history.trail ?? [], total: data.pages.history.total };
+  }
+
+  /** Retrieve one immutable page revision. */
+  async getPageVersion(pageId: number, versionId: number): Promise<PageVersion | null> {
+    const data = await this.query<{ pages: { version: PageVersion | null } }>(`
+      query($pageId: Int!, $versionId: Int!) {
+        pages {
+          version(pageId: $pageId, versionId: $versionId) {
+            action authorId authorName content contentType createdAt versionDate description editor
+            isPrivate isPublished locale pageId path publishEndDate publishStartDate tags title versionId
+          }
+        }
+      }
+    `, { pageId, versionId });
+    return data.pages.version;
+  }
+
+  /** Restore one page revision. Callers must perform their own confirmation. */
+  async restorePageVersion(pageId: number, versionId: number): Promise<ApiResponseResult> {
+    const data = await this.query<{ pages: { restore: { responseResult: ApiResponseResult } } }>(`
+      mutation($pageId: Int!, $versionId: Int!) {
+        pages {
+          restore(pageId: $pageId, versionId: $versionId) {
+            responseResult { succeeded errorCode message }
+          }
+        }
+      }
+    `, { pageId, versionId });
+    const result = data.pages.restore.responseResult;
+    if (!result.succeeded) throw new Error(`Failed to restore page version: ${result.message}`);
+    return result;
   }
 
   /**

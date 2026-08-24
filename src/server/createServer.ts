@@ -15,10 +15,24 @@ import {
   handleDeletePage,
   movePageToolDefinition,
   handleMovePage,
+  getTreeToolDefinition,
+  handleGetTree,
+  listTagsToolDefinition,
+  handleListTags,
+  searchTagsToolDefinition,
+  handleSearchTags,
+  pageHistoryToolDefinition,
+  handlePageHistory,
+  pageVersionToolDefinition,
+  handlePageVersion,
+  restorePageVersionToolDefinition,
+  handleRestorePageVersion,
+  patchPageToolDefinition,
+  handlePatchPage,
 } from '../tools/index.js';
 
 export const SERVER_NAME = 'wikijs-mcp-server';
-export const SERVER_VERSION = '2.0.1';
+export const SERVER_VERSION = '2.1.0';
 
 /** Create the common MCP server independently of the transport used to host it. */
 export function createServer(wikiClient: WikiJsClient): McpServer {
@@ -31,6 +45,13 @@ export function createServer(wikiClient: WikiJsClient): McpServer {
   server.tool(updatePageToolDefinition.name, updatePageToolDefinition.description, updatePageToolDefinition.inputSchema.shape, async (args) => handleUpdatePage(wikiClient, args));
   server.tool(deletePageToolDefinition.name, deletePageToolDefinition.description, deletePageToolDefinition.inputSchema.shape, async (args) => handleDeletePage(wikiClient, args));
   server.tool(movePageToolDefinition.name, movePageToolDefinition.description, movePageToolDefinition.inputSchema.shape, async (args) => handleMovePage(wikiClient, args));
+  server.tool(getTreeToolDefinition.name, getTreeToolDefinition.description, getTreeToolDefinition.inputSchema.shape, async (args) => handleGetTree(wikiClient, args));
+  server.tool(listTagsToolDefinition.name, listTagsToolDefinition.description, listTagsToolDefinition.inputSchema.shape, async (args) => handleListTags(wikiClient, args));
+  server.tool(searchTagsToolDefinition.name, searchTagsToolDefinition.description, searchTagsToolDefinition.inputSchema.shape, async (args) => handleSearchTags(wikiClient, args));
+  server.tool(pageHistoryToolDefinition.name, pageHistoryToolDefinition.description, pageHistoryToolDefinition.inputSchema.shape, async (args) => handlePageHistory(wikiClient, args));
+  server.tool(pageVersionToolDefinition.name, pageVersionToolDefinition.description, pageVersionToolDefinition.inputSchema.shape, async (args) => handlePageVersion(wikiClient, args));
+  server.tool(restorePageVersionToolDefinition.name, restorePageVersionToolDefinition.description, restorePageVersionToolDefinition.inputSchema.shape, async (args) => handleRestorePageVersion(wikiClient, args));
+  server.tool(patchPageToolDefinition.name, patchPageToolDefinition.description, patchPageToolDefinition.inputSchema.shape, async (args) => handlePatchPage(wikiClient, args));
 
   return server;
 }
