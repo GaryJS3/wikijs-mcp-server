@@ -60,7 +60,7 @@ describe('handleUpdatePage', () => {
       expect(result.isError).toBeFalsy();
 
       // Verify getPageById was called to fetch existing content
-      expect(mockClient.getPageById).toHaveBeenCalledWith(42);
+      expect(mockClient.getPageById).toHaveBeenCalledWith(42, false);
 
       // Verify updatePage was called with the fetched content
       expect(mockClient.updatePage).toHaveBeenCalledWith(
@@ -81,7 +81,7 @@ describe('handleUpdatePage', () => {
       expect(result.isError).toBeFalsy();
 
       // Verify getPageById was called
-      expect(mockClient.getPageById).toHaveBeenCalledWith(42);
+      expect(mockClient.getPageById).toHaveBeenCalledWith(42, false);
 
       // Verify updatePage was called with fetched content
       expect(mockClient.updatePage).toHaveBeenCalledWith(
@@ -101,7 +101,7 @@ describe('handleUpdatePage', () => {
 
       expect(result.isError).toBeFalsy();
 
-      expect(mockClient.getPageById).toHaveBeenCalledWith(42);
+      expect(mockClient.getPageById).toHaveBeenCalledWith(42, false);
 
       expect(mockClient.updatePage).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -144,7 +144,7 @@ describe('handleUpdatePage', () => {
       expect(result.isError).toBeFalsy();
 
       // Verify path resolution
-      expect(mockClient.getPageByPath).toHaveBeenCalledWith('test/page', 'en');
+      expect(mockClient.getPageByPath).toHaveBeenCalledWith('test/page', 'en', false);
 
       // Verify updatePage was called with fetched content
       expect(mockClient.updatePage).toHaveBeenCalledWith(

@@ -79,31 +79,36 @@ describe('Streamable HTTP transport', () => {
       requestInit: { headers: { authorization: 'Bearer test-token' } },
     });
 
-    await client.connect(transport);
-    const tools = await client.listTools();
-    expect(tools.tools.map((tool) => tool.name)).toEqual([
-      'wikijs_create_page',
-      'wikijs_get_page',
-      'wikijs_list_pages',
-      'wikijs_search_pages',
-      'wikijs_update_page',
-      'wikijs_delete_page',
-      'wikijs_move_page',
-      'wikijs_get_tree',
-      'wikijs_list_tags',
-      'wikijs_search_tags',
-      'wikijs_page_history',
-      'wikijs_get_page_version',
-      'wikijs_restore_page_version',
-      'wikijs_patch_page',
-    ]);
-    expect(tools.tools.every((tool) => tool.outputSchema)).toBe(true);
+    try {
+      await client.connect(transport);
+      const tools = await client.listTools();
+      expect(tools.tools.map((tool) => tool.name)).toEqual([
+        'wikijs_create_page',
+        'wikijs_get_page',
+        'wikijs_list_pages',
+        'wikijs_search_pages',
+        'wikijs_update_page',
+        'wikijs_delete_page',
+        'wikijs_move_page',
+        'wikijs_get_tree',
+        'wikijs_list_tags',
+        'wikijs_search_tags',
+        'wikijs_page_history',
+        'wikijs_get_page_version',
+        'wikijs_restore_page_version',
+        'wikijs_get_page_css',
+        'wikijs_update_page_css',
+        'wikijs_patch_page',
+      ]);
+      expect(tools.tools.every((tool) => tool.outputSchema)).toBe(true);
 
-    const result = await client.callTool({ name: 'wikijs_get_page', arguments: { id: 42 } });
-    expect(result.isError).not.toBe(true);
-    expect(JSON.parse((result.content[0] as { text: string }).text).page.title).toBe('Test page');
-    expect(result.structuredContent).toMatchObject({ success: true, page: { title: 'Test page' } });
-    await client.close();
+      const result = await client.callTool({ name: 'wikijs_get_page', arguments: { id: 42 } });
+      expect(result.isError).not.toBe(true);
+      expect(JSON.parse((result.content[0] as { text: string }).text).page.title).toBe('Test page');
+      expect(result.structuredContent).toMatchObject({ success: true, page: { title: 'Test page' } });
+    } finally {
+      await client.close();
+    }
   });
 
   it('handles malformed MCP requests without exposing server details', async () => {

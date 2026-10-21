@@ -76,4 +76,11 @@ describe('WikiJsClient preserves style and script', () => {
     vi.spyOn(client, 'getPageById').mockResolvedValue({ ...page, content: undefined });
     await expect(client.updatePage({ id: 7, title: 'No' })).rejects.toThrow('unavailable');
   });
+  it('fails closed when CSS or JavaScript cannot be read', async () => {
+    const client = new WikiJsClient('https://wiki.example/graphql', 'test-token');
+    vi.spyOn(client, 'getPageById').mockResolvedValue({ ...page, scriptCss: null });
+    const query = vi.spyOn(client, 'query');
+    await expect(client.updatePage({ id: 7, title: 'No' })).rejects.toThrow('CSS or JavaScript is unavailable');
+    expect(query).not.toHaveBeenCalled();
+  });
 });

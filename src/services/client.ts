@@ -420,6 +420,9 @@ export class WikiJsClient {
     if (current.content === undefined || current.content === null) {
       throw new Error('Page source content is unavailable; refusing to update');
     }
+    if (current.scriptCss == null || current.scriptJs == null) {
+      throw new Error('Page CSS or JavaScript is unavailable; refusing to update without preserving page styles');
+    }
 
     if (params.expectedScriptCss !== undefined && (current.scriptCss ?? '') !== params.expectedScriptCss) {
       throw new Error('Page CSS changed since it was read; no update applied');
@@ -475,8 +478,8 @@ export class WikiJsClient {
       description: params.description ?? current.description ?? '',
       isPublished: params.isPublished ?? current.isPublished,
       tags: params.tags ?? current.tags ?? [],
-      scriptCss: params.scriptCss ?? current.scriptCss ?? '',
-      scriptJs: params.scriptJs ?? current.scriptJs ?? '',
+      scriptCss: params.scriptCss ?? current.scriptCss,
+      scriptJs: params.scriptJs ?? current.scriptJs,
       path: current.path,
       locale: current.locale,
       publishStartDate: current.publishStartDate ?? null,
