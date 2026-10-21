@@ -278,14 +278,18 @@ export class WikiJsClient {
         }
       }
     `;
+    // Wiki.js 2.x uses the nonexistent Knex "andWhereNotNull" method for PAGES.
+    // Query ALL and apply the equivalent pageId IS NOT NULL filter locally.
+    const queryMode = mode === 'PAGES' ? 'ALL' : mode;
     const data = await this.query<{ pages: { tree: PageTreeItem[] | null } }>(query, {
       path,
       parent,
-      mode,
+      mode: queryMode,
       locale,
       includeAncestors,
     });
-    return data.pages.tree ?? [];
+    const tree = data.pages.tree ?? [];
+    return mode === 'PAGES' ? tree.filter((item) => item.pageId != null) : tree;
   }
 
   /** List tags defined by pages. */
