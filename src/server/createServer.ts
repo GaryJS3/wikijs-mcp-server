@@ -30,6 +30,10 @@ import {
   handleRestorePageVersion,
   patchPageToolDefinition,
   handlePatchPage,
+  getPageCssToolDefinition,
+  handleGetPageCss,
+  updatePageCssToolDefinition,
+  handleUpdatePageCss,
 } from '../tools/index.js';
 import {
   createPageOutputSchema,
@@ -46,6 +50,8 @@ import {
   pageVersionOutputSchema,
   restorePageVersionOutputSchema,
   patchPageOutputSchema,
+  getPageCssOutputSchema,
+  updatePageCssOutputSchema,
 } from '../schemas/outputs.js';
 import { uploadAssetToolDefinition,handleUploadAsset,listAssetsToolDefinition,handleListAssets,listAssetFoldersToolDefinition,handleListAssetFolders,createAssetFolderToolDefinition,handleCreateAssetFolder,renameAssetToolDefinition,handleRenameAsset,deleteAssetToolDefinition,handleDeleteAsset } from '../tools/index.js';
 import { uploadAssetOutputSchema,listAssetsOutputSchema,listAssetFoldersOutputSchema,createAssetFolderOutputSchema,renameAssetOutputSchema,deleteAssetOutputSchema } from '../schemas/outputs.js';
@@ -70,6 +76,8 @@ export function createServer(wikiClient: WikiJsClient, assets?: WikiJsAssets): M
   server.registerTool(pageHistoryToolDefinition.name, { description: pageHistoryToolDefinition.description, inputSchema: pageHistoryToolDefinition.inputSchema, outputSchema: pageHistoryOutputSchema, annotations: pageHistoryToolDefinition.annotations }, async (args) => handlePageHistory(wikiClient, args));
   server.registerTool(pageVersionToolDefinition.name, { description: pageVersionToolDefinition.description, inputSchema: pageVersionToolDefinition.inputSchema, outputSchema: pageVersionOutputSchema, annotations: pageVersionToolDefinition.annotations }, async (args) => handlePageVersion(wikiClient, args));
   server.registerTool(restorePageVersionToolDefinition.name, { description: restorePageVersionToolDefinition.description, inputSchema: restorePageVersionToolDefinition.inputSchema, outputSchema: restorePageVersionOutputSchema, annotations: restorePageVersionToolDefinition.annotations }, async (args) => handleRestorePageVersion(wikiClient, args));
+  server.registerTool(getPageCssToolDefinition.name, { description: getPageCssToolDefinition.description, inputSchema: getPageCssToolDefinition.inputSchema, outputSchema: getPageCssOutputSchema, annotations: getPageCssToolDefinition.annotations }, async (args) => handleGetPageCss(wikiClient, args));
+  server.registerTool(updatePageCssToolDefinition.name, { description: updatePageCssToolDefinition.description, inputSchema: updatePageCssToolDefinition.inputSchema, outputSchema: updatePageCssOutputSchema, annotations: updatePageCssToolDefinition.annotations }, async (args) => handleUpdatePageCss(wikiClient, args));
   server.registerTool(patchPageToolDefinition.name, { description: patchPageToolDefinition.description, inputSchema: patchPageToolDefinition.inputSchema, outputSchema: patchPageOutputSchema, annotations: patchPageToolDefinition.annotations }, async (args) => handlePatchPage(wikiClient, args));
 
   if (assets) {
