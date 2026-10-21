@@ -180,6 +180,11 @@ export class WikiJsClient {
             description
             content
             contentType
+            editor
+            scriptCss
+            scriptJs
+            publishStartDate
+            publishEndDate
             isPublished
             locale
             createdAt
