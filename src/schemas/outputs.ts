@@ -29,6 +29,9 @@ const pageSummarySchema = z.object({
 const pageSchema = pageSummarySchema.extend({
   content: z.string().nullable().optional(),
   contentType: z.string().nullable().optional(),
+  editor: z.string().nullable().optional(),
+  scriptCss: z.string().nullable().optional(),
+  scriptJs: z.string().nullable().optional(),
   createdAt: z.string().nullable().optional(),
 }).passthrough();
 
@@ -174,3 +177,16 @@ export const listAssetFoldersOutputSchema = z.object({folders:z.array(z.object({
 export const createAssetFolderOutputSchema = z.object({id:z.number(),path:z.string()});
 export const renameAssetOutputSchema = z.object({id:z.number(),filename:z.string()}).passthrough();
 export const deleteAssetOutputSchema = z.object({id:z.number(),deleted:z.boolean()});
+
+export const getPageCssOutputSchema = successSchema.extend({
+  pageId: z.number(),
+  css: z.string(),
+});
+export const updatePageCssOutputSchema = successSchema.extend({
+  pageId: z.number(),
+  dryRun: z.boolean(),
+  applied: z.boolean(),
+  previousCss: z.string(),
+  proposedCss: z.string(),
+  result: apiResponseResultSchema.optional(),
+});
