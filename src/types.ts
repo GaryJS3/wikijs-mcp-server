@@ -10,6 +10,11 @@ export interface WikiPage {
   description: string;
   content?: string;
   contentType?: string;
+  editor?: string;
+  scriptCss?: string | null;
+  scriptJs?: string | null;
+  publishStartDate?: string | null;
+  publishEndDate?: string | null;
   isPublished: boolean;
   locale: string;
   createdAt?: string;
@@ -119,6 +124,7 @@ export interface CreatePageParams {
   path: string;
   tags: string[];
   title: string;
+  scriptCss?: string;
 }
 
 export interface UpdatePageParams {
@@ -128,6 +134,10 @@ export interface UpdatePageParams {
   description?: string | null;
   isPublished?: boolean | null;
   tags?: string[] | null;
+  scriptCss?: string;
+  scriptJs?: string;
+  expectedScriptCss?: string;
+  expectedScriptJs?: string;
 }
 
 // Pagination Types
