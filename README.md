@@ -98,7 +98,9 @@ For a public reverse-proxy deployment, configure `MCP_ALLOWED_HOSTS`, `MCP_ALLOW
 
 | Tool | Description |
 | --- | --- |
-| `wikijs_create_page` | Create a Wiki.js page. |
+| `wikijs_create_page` | Create a Wiki.js page, optionally with page-local CSS. |
+| `wikijs_get_page_css` | Read the complete page-local stylesheet. |
+| `wikijs_update_page_css` | Preview or replace page-local CSS (dry-run by default). |
 | `wikijs_update_page` | Update page content or metadata. |
 | `wikijs_get_page` | Retrieve page content and metadata. |
 | `wikijs_list_pages` | List pages with pagination and filtering. |
@@ -146,3 +148,13 @@ Example: upload with `filename: "r730xd-front.jpg"`, `folderPath: "equipment/ser
 ```
 
 Asset paths use Wiki.js's path convention (leading slash, folder slugs, and filename). Reverse-proxy installations retain the configured API path prefix in the absolute URL. Wiki.js 2.x upload responses do not return the created asset ID, so the server verifies the asset through GraphQL after upload; a successful upload that cannot be read back is reported as an error.
+
+## Per-page HTML and CSS
+
+Wiki.js 2.x supports `scriptCss` and `scriptJs` GraphQL page fields. This MCP server exposes both in `wikijs_get_page`, preserves them when saving pages, and accepts optional `scriptCss` when creating pages. The `editor: "code"` setting supports raw HTML page content; keep `editor: "markdown"` for ordinary documentation.
+
+The API token needs Wiki.js `read:pages` / `write:pages` and `write:styles` to modify CSS. JavaScript editing is intentionally not exposed through the MCP tools, although existing page JS is preserved during other edits. This support is targeted to Wiki.js **2.x** and should be verified separately with Wiki.js v3.
+
+Read CSS using `wikijs_get_page_css` with `id` or `path`. To change CSS, call `wikijs_update_page_css` with `css`, optional `expectedCss` and `dryRun: false`. Dry run is the default, never changes a page, and returns the proposed stylesheet. An empty CSS string clears styles. Successful writes re-read Wiki.js to verify the result. Wiki.js does not provide a guaranteed atomic compare-and-swap for these operations; expectedCss guards against stale data but not all races.
+
+Ordinary page updates preserve styles and scripts through a full untruncated page read before writing. The service rejects edits when the original content is not readable. Where possible, give the API token only the permissions needed.
