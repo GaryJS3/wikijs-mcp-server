@@ -138,6 +138,8 @@ export interface UpdatePageParams {
   scriptJs?: string;
   expectedScriptCss?: string;
   expectedScriptJs?: string;
+  expectedContent?: string;
+  expectedUpdatedAt?: string;
 }
 
 // Pagination Types

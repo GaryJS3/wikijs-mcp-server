@@ -71,6 +71,20 @@ describe('WikiJsClient preserves style and script', () => {
     await expect(client.updatePage({ id: 7, scriptCss: '.changed', expectedScriptCss: '.stale' })).rejects.toThrow('CSS changed');
     expect(query).not.toHaveBeenCalled();
   });
+  it('rejects stale content before writing', async () => {
+    const client = new WikiJsClient('https://wiki.example/graphql', 'test-token');
+    vi.spyOn(client, 'getPageById').mockResolvedValue({ ...page, content: '# Newer content' });
+    const query = vi.spyOn(client, 'query');
+    await expect(client.updatePage({ id: 7, content: '# Replacement', expectedContent: '# Older content' })).rejects.toThrow('content changed');
+    expect(query).not.toHaveBeenCalled();
+  });
+  it('rejects a stale page timestamp before writing', async () => {
+    const client = new WikiJsClient('https://wiki.example/graphql', 'test-token');
+    vi.spyOn(client, 'getPageById').mockResolvedValue({ ...page, updatedAt: '2026-10-20T10:01:00.000Z' });
+    const query = vi.spyOn(client, 'query');
+    await expect(client.updatePage({ id: 7, title: 'New title', expectedUpdatedAt: '2026-10-20T10:00:00.000Z' })).rejects.toThrow('Page changed');
+    expect(query).not.toHaveBeenCalled();
+  });
   it('fails closed when page source is unavailable', async () => {
     const client = new WikiJsClient('https://wiki.example/graphql', 'test-token');
     vi.spyOn(client, 'getPageById').mockResolvedValue({ ...page, content: undefined });

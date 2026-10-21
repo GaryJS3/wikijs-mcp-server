@@ -86,6 +86,12 @@ export class WikiJsAssets {
     const parent=await this.resolveFolder(parentPath); const folders=await this.folders(parent.id);
     return folders.map(f=>({...f,path:[parent.path,f.slug].filter(Boolean).join('/')}));
   }
+  async getById(id:number): Promise<{id:number;filename:string;mimeType:string;relativeUrl:string;absoluteUrl:string}> {
+    if (!Number.isInteger(id) || id <= 0) throw new Error('Asset ID must be a positive integer');
+    const asset=await this.findById(id); const folderPath=await this.pathForFolder(asset.folder?.id??0);
+    const relativeUrl=this.assetUrl(folderPath,asset.filename);
+    return {id:asset.id,filename:asset.filename,mimeType:asset.mime,relativeUrl,absoluteUrl:this.absoluteUrl(relativeUrl)};
+  }
   async createFolder(path:string, recursive=true): Promise<{id:number;path:string}> {
     const parts=safePath(path); if (!recursive && parts.length>1) throw new Error('recursive=false only supports a folder directly under the root');
     return this.resolveFolder(parts.join('/'),true);

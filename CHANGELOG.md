@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Page-local CSS reading and dry-run-by-default stylesheet updates using `wikijs_get_page_css` and `wikijs_update_page_css`.
 - Optional `scriptCss` on new pages, and HTML editor/style metadata in page retrieval.
-
+- `wikijs_insert_asset` to preview or insert existing and newly uploaded images into Markdown and HTML pages, with guarded placement and verification.
 - Native Wiki.js asset tools for upload, listing, folder creation, rename, and confirmed deletion.
 - Bounded image uploads from Base64 or public HTTP(S) URLs, with PNG/JPEG/GIF/WebP signature checks.
 - Configurable upload size and remote URL source controls.

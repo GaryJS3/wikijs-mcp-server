@@ -114,6 +114,7 @@ For a public reverse-proxy deployment, configure `MCP_ALLOWED_HOSTS`, `MCP_ALLOW
 | `wikijs_get_page_version` | Retrieve one immutable page revision. |
 | `wikijs_patch_page` | Preview by default or replace exactly one expected text occurrence with a guarded update. |
 | `wikijs_restore_page_version` | Preview by default or restore a confirmed page revision. |
+| `wikijs_insert_asset` | Preview or insert an existing or newly uploaded image into a Markdown or HTML page. |
 
 ## Development
 
@@ -158,3 +159,5 @@ The API token needs Wiki.js `read:pages` / `write:pages` and `write:styles` to m
 Read CSS using `wikijs_get_page_css` with `id` or `path`. To change CSS, call `wikijs_update_page_css` with `css`, optional `expectedCss` and `dryRun: false`. Dry run is the default, never changes a page, and returns the proposed stylesheet. An empty CSS string clears styles. Successful writes re-read Wiki.js to verify the result. Wiki.js does not provide a guaranteed atomic compare-and-swap for these operations; expectedCss guards against stale data but not all races.
 
 Ordinary page updates preserve styles and scripts through a full untruncated page read before writing. The service rejects edits when the original content is not readable. Where possible, give the API token only the permissions needed.
+
+`wikijs_insert_asset` requires exactly one page selector (`pageId` or `pagePath`) and one image source (`assetId`, `sourceUrl`, or `base64Data`). For uploads, provide `filename`; `dryRun` defaults to `true` and never uploads or creates folders. Use `position` with `anchorText` for anchored placement; anchors must match once. It detects Markdown versus HTML from the page's stored content type, preserves metadata, and verifies the inserted URL after an update. When available, Wiki.js `pages.checkConflicts` is queried using the page's `updatedAt` timestamp; a second full-content read is also used. These are checks before the write, not an atomic condition on it, so a small race remains. When an upload succeeds but the page write fails, its result includes the uploaded asset ID for retry. The asset upload and page update are separate operations.

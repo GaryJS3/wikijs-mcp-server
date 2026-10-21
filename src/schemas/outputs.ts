@@ -177,7 +177,6 @@ export const listAssetFoldersOutputSchema = z.object({folders:z.array(z.object({
 export const createAssetFolderOutputSchema = z.object({id:z.number(),path:z.string()});
 export const renameAssetOutputSchema = z.object({id:z.number(),filename:z.string()}).passthrough();
 export const deleteAssetOutputSchema = z.object({id:z.number(),deleted:z.boolean()});
-
 export const getPageCssOutputSchema = successSchema.extend({
   pageId: z.number(),
   css: z.string(),
@@ -190,3 +189,31 @@ export const updatePageCssOutputSchema = successSchema.extend({
   proposedCss: z.string(),
   result: apiResponseResultSchema.optional(),
 });
+const insertAssetSuccessOutputSchema = successSchema.extend({
+  pageId: z.number(),
+  assetId: z.number().optional(),
+  assetUrl: z.string(),
+  insertedMarkup: z.string(),
+  position: z.enum(['append', 'prepend', 'before', 'after', 'replace']),
+  applied: z.boolean(),
+  dryRun: z.boolean().optional(),
+  preview: z.string().optional(),
+  provisionalUrl: z.boolean().optional(),
+  duplicate: z.boolean().optional(),
+  verified: z.boolean().optional(),
+});
+const insertAssetErrorOutputSchema = z.object({
+  success: z.literal(false),
+  error: z.string(),
+  tool: z.string().optional(),
+  pageId: z.number().optional(),
+  assetId: z.number().optional(),
+  assetUrl: z.string().optional(),
+  insertedMarkup: z.string().optional(),
+  position: z.enum(['append', 'prepend', 'before', 'after', 'replace']).optional(),
+  applied: z.boolean().optional(),
+  partialFailure: z.boolean().optional(),
+  uploadedAssetId: z.number().optional(),
+  retryWithAssetId: z.number().optional(),
+});
+export const insertAssetOutputSchema = z.union([insertAssetSuccessOutputSchema, insertAssetErrorOutputSchema]);

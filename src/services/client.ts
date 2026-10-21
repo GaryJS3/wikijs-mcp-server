@@ -208,6 +208,16 @@ export class WikiJsClient {
     return page;
   }
 
+  /** Ask Wiki.js whether a page changed since the supplied editor checkout time. This is a check, not an atomic update condition. */
+  async checkPageConflicts(id: number, checkoutDate: string): Promise<boolean> {
+    const data = await this.query<{ pages: { checkConflicts: boolean } }>(`
+      query($id: Int!, $checkoutDate: Date!) {
+        pages { checkConflicts(id: $id, checkoutDate: $checkoutDate) }
+      }
+    `, { id, checkoutDate });
+    return data.pages.checkConflicts;
+  }
+
   /**
    * Search pages
    */
@@ -422,6 +432,12 @@ export class WikiJsClient {
     }
     if (current.scriptCss == null || current.scriptJs == null) {
       throw new Error('Page CSS or JavaScript is unavailable; refusing to update without preserving page styles');
+    }
+    if (params.expectedContent !== undefined && current.content !== params.expectedContent) {
+      throw new Error('Page content changed since it was read; no update applied');
+    }
+    if (params.expectedUpdatedAt !== undefined && current.updatedAt !== params.expectedUpdatedAt) {
+      throw new Error('Page changed since it was read; no update applied');
     }
 
     if (params.expectedScriptCss !== undefined && (current.scriptCss ?? '') !== params.expectedScriptCss) {
