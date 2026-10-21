@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { WikiJsClient } from '../services/client.js';
+import type { WikiJsAssets } from '../services/assets.js';
 import {
   createPageToolDefinition,
   handleCreatePage,
@@ -46,12 +47,14 @@ import {
   restorePageVersionOutputSchema,
   patchPageOutputSchema,
 } from '../schemas/outputs.js';
+import { uploadAssetToolDefinition,handleUploadAsset,listAssetsToolDefinition,handleListAssets,listAssetFoldersToolDefinition,handleListAssetFolders,createAssetFolderToolDefinition,handleCreateAssetFolder,renameAssetToolDefinition,handleRenameAsset,deleteAssetToolDefinition,handleDeleteAsset } from '../tools/index.js';
+import { uploadAssetOutputSchema,listAssetsOutputSchema,listAssetFoldersOutputSchema,createAssetFolderOutputSchema,renameAssetOutputSchema,deleteAssetOutputSchema } from '../schemas/outputs.js';
 
 export const SERVER_NAME = 'wikijs-mcp-server';
 export const SERVER_VERSION = '2.1.0';
 
 /** Create the common MCP server independently of the transport used to host it. */
-export function createServer(wikiClient: WikiJsClient): McpServer {
+export function createServer(wikiClient: WikiJsClient, assets?: WikiJsAssets): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
 
   server.registerTool(createPageToolDefinition.name, { description: createPageToolDefinition.description, inputSchema: createPageToolDefinition.inputSchema, outputSchema: createPageOutputSchema, annotations: createPageToolDefinition.annotations }, async (args) => handleCreatePage(wikiClient, args));
@@ -68,6 +71,15 @@ export function createServer(wikiClient: WikiJsClient): McpServer {
   server.registerTool(pageVersionToolDefinition.name, { description: pageVersionToolDefinition.description, inputSchema: pageVersionToolDefinition.inputSchema, outputSchema: pageVersionOutputSchema, annotations: pageVersionToolDefinition.annotations }, async (args) => handlePageVersion(wikiClient, args));
   server.registerTool(restorePageVersionToolDefinition.name, { description: restorePageVersionToolDefinition.description, inputSchema: restorePageVersionToolDefinition.inputSchema, outputSchema: restorePageVersionOutputSchema, annotations: restorePageVersionToolDefinition.annotations }, async (args) => handleRestorePageVersion(wikiClient, args));
   server.registerTool(patchPageToolDefinition.name, { description: patchPageToolDefinition.description, inputSchema: patchPageToolDefinition.inputSchema, outputSchema: patchPageOutputSchema, annotations: patchPageToolDefinition.annotations }, async (args) => handlePatchPage(wikiClient, args));
+
+  if (assets) {
+    server.registerTool(uploadAssetToolDefinition.name,{description:uploadAssetToolDefinition.description,inputSchema:uploadAssetToolDefinition.inputSchema,outputSchema:uploadAssetOutputSchema,annotations:uploadAssetToolDefinition.annotations},async(args)=>handleUploadAsset(assets,args));
+    server.registerTool(listAssetsToolDefinition.name,{description:listAssetsToolDefinition.description,inputSchema:listAssetsToolDefinition.inputSchema,outputSchema:listAssetsOutputSchema,annotations:listAssetsToolDefinition.annotations},async(args)=>handleListAssets(assets,args));
+    server.registerTool(listAssetFoldersToolDefinition.name,{description:listAssetFoldersToolDefinition.description,inputSchema:listAssetFoldersToolDefinition.inputSchema,outputSchema:listAssetFoldersOutputSchema,annotations:listAssetFoldersToolDefinition.annotations},async(args)=>handleListAssetFolders(assets,args));
+    server.registerTool(createAssetFolderToolDefinition.name,{description:createAssetFolderToolDefinition.description,inputSchema:createAssetFolderToolDefinition.inputSchema,outputSchema:createAssetFolderOutputSchema,annotations:createAssetFolderToolDefinition.annotations},async(args)=>handleCreateAssetFolder(assets,args));
+    server.registerTool(renameAssetToolDefinition.name,{description:renameAssetToolDefinition.description,inputSchema:renameAssetToolDefinition.inputSchema,outputSchema:renameAssetOutputSchema,annotations:renameAssetToolDefinition.annotations},async(args)=>handleRenameAsset(assets,args));
+    server.registerTool(deleteAssetToolDefinition.name,{description:deleteAssetToolDefinition.description,inputSchema:deleteAssetToolDefinition.inputSchema,outputSchema:deleteAssetOutputSchema,annotations:deleteAssetToolDefinition.annotations},async(args)=>handleDeleteAsset(assets,args));
+  }
 
   return server;
 }

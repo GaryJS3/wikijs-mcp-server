@@ -15,6 +15,8 @@ export interface ServerConfig {
   mcpAuthToken?: string;
   allowedHosts: string[];
   allowedOrigins: string[];
+  maxUploadBytes: number;
+  allowRemoteAssets: boolean;
 }
 
 /** Load the deployment-directory .env first, then fall back to the current directory. */
@@ -71,6 +73,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ServerConfig {
     throw new Error('WIKIJS_API_URL must be a valid URL');
   }
 
+  const maxUploadMb = Number(env.WIKIJS_MAX_UPLOAD_MB ?? '10');
+  if (!Number.isFinite(maxUploadMb) || maxUploadMb <= 0 || maxUploadMb > 100) {
+    throw new Error('WIKIJS_MAX_UPLOAD_MB must be a number greater than 0 and at most 100');
+  }
+
   return {
     transport,
     wikiJsApiUrl,
@@ -81,5 +88,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ServerConfig {
     mcpAuthToken: env.MCP_AUTH_TOKEN || undefined,
     allowedHosts: parseList(env.MCP_ALLOWED_HOSTS),
     allowedOrigins: parseList(env.MCP_ALLOWED_ORIGINS),
+    maxUploadBytes: Math.round(maxUploadMb * 1024 * 1024),
+    allowRemoteAssets: (env.WIKIJS_ALLOW_REMOTE_ASSETS ?? 'true').toLowerCase() === 'true',
   };
 }

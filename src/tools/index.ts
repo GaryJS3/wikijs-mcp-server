@@ -13,3 +13,4 @@ export { getTreeToolDefinition, handleGetTree } from './get-tree.js';
 export { listTagsToolDefinition, handleListTags, searchTagsToolDefinition, handleSearchTags } from './tags.js';
 export { pageHistoryToolDefinition, handlePageHistory, pageVersionToolDefinition, handlePageVersion, restorePageVersionToolDefinition, handleRestorePageVersion } from './history.js';
 export { patchPageToolDefinition, handlePatchPage } from './patch-page.js';
+export { uploadAssetToolDefinition, handleUploadAsset, listAssetsToolDefinition, handleListAssets, listAssetFoldersToolDefinition, handleListAssetFolders, createAssetFolderToolDefinition, handleCreateAssetFolder, renameAssetToolDefinition, handleRenameAsset, deleteAssetToolDefinition, handleDeleteAsset } from './assets.js';

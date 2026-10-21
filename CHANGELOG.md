@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Native Wiki.js asset tools for upload, listing, folder creation, rename, and confirmed deletion.
+- Bounded image uploads from Base64 or public HTTP(S) URLs, with PNG/JPEG/GIF/WebP signature checks.
+- Configurable upload size and remote URL source controls.
 - Wiki.js page-tree and tag discovery tools: `wikijs_get_tree`, `wikijs_list_tags`, and `wikijs_search_tags`.
 - Read-only page revision tools: `wikijs_page_history` and `wikijs_get_page_version`.
 - Guarded exact-match text replacement through `wikijs_patch_page`.

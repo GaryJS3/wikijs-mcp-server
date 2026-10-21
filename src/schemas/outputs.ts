@@ -166,3 +166,11 @@ export const patchPageOutputSchema = successSchema.extend({
     proposedContent: z.string().optional(),
     result: apiResponseResultSchema.optional(),
 });
+
+const assetSchema = z.object({ id:z.number(), filename:z.string(), mimeType:z.string().optional(), fileSize:z.number().optional(), folderPath:z.string().optional(), relativeUrl:z.string().optional(), absoluteUrl:z.string().optional(), markdown:z.string().optional(), html:z.string().optional() }).passthrough();
+export const uploadAssetOutputSchema = assetSchema;
+export const listAssetsOutputSchema = z.object({assets:z.array(z.object({id:z.number(),filename:z.string()}).passthrough()),total:z.number(),folderPath:z.string(),pagination:z.object({limit:z.number(),offset:z.number(),total_count:z.number(),has_more:z.boolean()})}).passthrough();
+export const listAssetFoldersOutputSchema = z.object({folders:z.array(z.object({id:z.number(),slug:z.string(),path:z.string()}).passthrough()),count:z.number()});
+export const createAssetFolderOutputSchema = z.object({id:z.number(),path:z.string()});
+export const renameAssetOutputSchema = z.object({id:z.number(),filename:z.string()}).passthrough();
+export const deleteAssetOutputSchema = z.object({id:z.number(),deleted:z.boolean()});

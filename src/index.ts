@@ -2,6 +2,7 @@
 
 import { loadConfig, loadEnvironment } from './config.js';
 import { WikiJsClient } from './services/client.js';
+import { WikiJsAssets } from './services/assets.js';
 import { createServer } from './server/createServer.js';
 import { startHttpServer } from './server/http.js';
 import { startStdioServer } from './server/stdio.js';
@@ -50,7 +51,8 @@ process.on('unhandledRejection', (reason) => {
 async function main(): Promise<void> {
   const config = loadConfig();
   const wikiClient = new WikiJsClient(config.wikiJsApiUrl, config.wikiJsApiToken);
-  const factory = (): import('@modelcontextprotocol/sdk/server/mcp.js').McpServer => createServer(wikiClient);
+  const assetService = new WikiJsAssets(config.wikiJsApiUrl, config.wikiJsApiToken, config.maxUploadBytes, 30_000, config.allowRemoteAssets);
+  const factory = (): import('@modelcontextprotocol/sdk/server/mcp.js').McpServer => createServer(wikiClient, assetService);
 
   if (config.transport === 'http') {
     httpServer = await startHttpServer(config, factory);

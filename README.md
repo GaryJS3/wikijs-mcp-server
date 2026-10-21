@@ -127,3 +127,22 @@ The reusable MCP server factory is in `src/server/createServer.ts`; stdio and HT
 ## License
 
 MIT License. See [LICENSE](./LICENSE).
+# Asset and image management
+
+The server exposes native Wiki.js asset tools: `wikijs_upload_asset`, `wikijs_list_assets`, `wikijs_list_asset_folders`, `wikijs_create_asset_folder`, `wikijs_rename_asset`, and `wikijs_delete_asset`. Wiki.js 2.x handles asset metadata and folder operations through GraphQL and accepts file uploads at the authenticated `/u` endpoint. The API token needs the relevant `read:assets`, `write:assets`, or `manage:assets` permissions.
+
+Uploads accept exactly one of a Base64 `base64Data` value or a public HTTP(S) `sourceUrl`. Supported formats are PNG, JPEG, GIF, and WebP; the server checks the content signature and default maximum size is 10 MB. `WIKIJS_MAX_UPLOAD_MB` changes the limit (up to 100 MB). `WIKIJS_ALLOW_REMOTE_ASSETS=false` disables URL downloads. Remote downloads reject loopback, private, link-local, and reserved IP resolutions, pin the validated address for the request, and reject unsafe redirects. URL uploads can still be affected by your network's DNS and egress policy; keep the server's outbound network restricted where possible.
+
+Overwrites are rejected. Asset deletion requires `confirm: true`; Wiki.js deletes only the selected asset, and pages that reference it are not modified. Filename extensions must match the image format. ChatGPT or Codex image attachments are not automatically exposed to this MCP server: provide an accessible source URL or Base64 data explicitly.
+
+Example: upload with `filename: "r730xd-front.jpg"`, `folderPath: "equipment/servers"`, and `sourceUrl: "https://example.com/server.jpg"`. Use the returned Markdown or HTML reference in a page:
+
+```markdown
+![Dell R730xd Front](/equipment/servers/r730xd-front.jpg)
+```
+
+```html
+<img src="/equipment/servers/r730xd-front.jpg" alt="Dell R730xd Front" style="max-width:100%;height:auto;">
+```
+
+Asset paths use Wiki.js's path convention (leading slash, folder slugs, and filename). Reverse-proxy installations retain the configured API path prefix in the absolute URL. Wiki.js 2.x upload responses do not return the created asset ID, so the server verifies the asset through GraphQL after upload; a successful upload that cannot be read back is reported as an error.
