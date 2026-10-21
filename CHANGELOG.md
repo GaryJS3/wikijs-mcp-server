@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Page-local CSS reading and dry-run-by-default stylesheet updates using `wikijs_get_page_css` and `wikijs_update_page_css`.
+- Optional `scriptCss` on new pages, and HTML editor/style metadata in page retrieval.
+
 - Native Wiki.js asset tools for upload, listing, folder creation, rename, and confirmed deletion.
 - Bounded image uploads from Base64 or public HTTP(S) URLs, with PNG/JPEG/GIF/WebP signature checks.
 - Configurable upload size and remote URL source controls.
@@ -34,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Nothing yet
 
 ### Fixed
-- Nothing yet
+- Preserve existing CSS and JavaScript during content/metadata edits; use full untruncated page source for updates.
 
 ### Security
 - `/mcp` never logs bearer tokens; non-loopback HTTP binding requires `MCP_ALLOWED_HOSTS`
