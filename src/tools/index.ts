@@ -14,3 +14,5 @@ export { listTagsToolDefinition, handleListTags, searchTagsToolDefinition, handl
 export { pageHistoryToolDefinition, handlePageHistory, pageVersionToolDefinition, handlePageVersion, restorePageVersionToolDefinition, handleRestorePageVersion } from './history.js';
 export { patchPageToolDefinition, handlePatchPage } from './patch-page.js';
 export { uploadAssetToolDefinition, handleUploadAsset, listAssetsToolDefinition, handleListAssets, listAssetFoldersToolDefinition, handleListAssetFolders, createAssetFolderToolDefinition, handleCreateAssetFolder, renameAssetToolDefinition, handleRenameAsset, deleteAssetToolDefinition, handleDeleteAsset } from './assets.js';
+
+export { getPageCssToolDefinition, handleGetPageCss, updatePageCssToolDefinition, handleUpdatePageCss } from './page-css.js';
