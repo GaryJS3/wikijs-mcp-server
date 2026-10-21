@@ -59,6 +59,7 @@ export async function handleCreatePage(
       isPublished: validated.isPublished,
       isPrivate: validated.isPrivate,
       tags: validated.tags,
+      scriptCss: validated.scriptCss,
     });
 
     return successResponse({
