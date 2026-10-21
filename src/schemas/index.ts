@@ -79,6 +79,7 @@ export const createPageSchema = z.object({
   tags: tagsSchema
     .default([])
     .describe('Array of tags for the page (e.g., ["tutorial", "development"])'),
+  scriptCss: z.string().max(MAX_CONTENT_SIZE).optional().describe('Optional per-page CSS; requires Wiki.js write:styles permission'),
 });
 
 export type CreatePageInput = z.infer<typeof createPageSchema>;
@@ -225,3 +226,15 @@ export const restorePageVersionSchema = z.object({
 });
 
 export type RestorePageVersionInput = z.infer<typeof restorePageVersionSchema>;
+
+/** Per-page styling operations. Empty CSS explicitly clears existing styles. */
+export const pageCssSchema = z.object({
+  id: pageIdSchema.optional(),
+  path: pagePathSchema.optional(),
+  locale: localeSchema,
+});
+export const updatePageCssSchema = pageCssSchema.extend({
+  css: z.string().max(MAX_CONTENT_SIZE).describe('Replacement page-local CSS'),
+  expectedCss: z.string().max(MAX_CONTENT_SIZE).optional().describe('Exact existing CSS required before applying'),
+  dryRun: z.boolean().default(true),
+});
