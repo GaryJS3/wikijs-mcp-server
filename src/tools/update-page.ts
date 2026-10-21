@@ -62,7 +62,7 @@ export async function handleUpdatePage(
     let currentPage = null;
 
     if (!pageId && validated.path) {
-      currentPage = await client.getPageByPath(validated.path, validated.locale);
+      currentPage = await client.getPageByPath(validated.path, validated.locale, false);
       if (!currentPage) {
         throw new Error(`Page not found at path: ${validated.path}`);
       }
@@ -81,7 +81,7 @@ export async function handleUpdatePage(
       validated.description === undefined;
 
     if (needsCurrentPage && !currentPage) {
-      currentPage = await client.getPageById(pageId);
+      currentPage = await client.getPageById(pageId, false);
       if (!currentPage) {
         throw new Error(`Page not found with ID: ${pageId}`);
       }
