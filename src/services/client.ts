@@ -138,6 +138,11 @@ export class WikiJsClient {
             description
             content
             contentType
+            editor
+            scriptCss
+            scriptJs
+            publishStartDate
+            publishEndDate
             isPublished
             locale
             createdAt
@@ -352,6 +357,7 @@ export class WikiJsClient {
         $path: String!
         $tags: [String]!
         $title: String!
+        $scriptCss: String
       ) {
         pages {
           create(
@@ -364,6 +370,7 @@ export class WikiJsClient {
             path: $path
             tags: $tags
             title: $title
+            scriptCss: $scriptCss
           ) {
             responseResult {
               succeeded
@@ -398,12 +405,24 @@ export class WikiJsClient {
   }
 
   /**
-   * Update an existing page
-   *
-   * Uses a static parameterized mutation with all optional fields.
-   * Wiki.js ignores null values for optional parameters.
+   * Update a page without erasing page-local CSS/JS or other omitted metadata.
+   * Wiki.js 2.x rewrites these fields on every update when the caller has style/script permissions.
+   * Fetch a fresh, untruncated snapshot and send the current values explicitly.
    */
   async updatePage(params: UpdatePageParams): Promise<ApiResponseResult> {
+    const current = await this.getPageById(params.id, false);
+    if (!current) throw new Error(`Page not found with ID: ${params.id}`);
+    if (current.content === undefined || current.content === null) {
+      throw new Error('Page source content is unavailable; refusing to update');
+    }
+
+    if (params.expectedScriptCss !== undefined && (current.scriptCss ?? '') !== params.expectedScriptCss) {
+      throw new Error('Page CSS changed since it was read; no update applied');
+    }
+    if (params.expectedScriptJs !== undefined && (current.scriptJs ?? '') !== params.expectedScriptJs) {
+      throw new Error('Page JavaScript changed since it was read; no update applied');
+    }
+
     const query = `
       mutation(
         $id: Int!
@@ -412,6 +431,12 @@ export class WikiJsClient {
         $description: String
         $isPublished: Boolean
         $tags: [String]
+        $scriptCss: String
+        $scriptJs: String
+        $path: String
+        $locale: String
+        $publishStartDate: Date
+        $publishEndDate: Date
       ) {
         pages {
           update(
@@ -421,6 +446,12 @@ export class WikiJsClient {
             description: $description
             isPublished: $isPublished
             tags: $tags
+            scriptCss: $scriptCss
+            scriptJs: $scriptJs
+            path: $path
+            locale: $locale
+            publishStartDate: $publishStartDate
+            publishEndDate: $publishEndDate
           ) {
             responseResult {
               succeeded
@@ -434,26 +465,25 @@ export class WikiJsClient {
 
     const variables: Record<string, unknown> = {
       id: params.id,
-      content: params.content ?? null,
-      title: params.title ?? null,
-      description: params.description ?? null,
-      isPublished: params.isPublished ?? null,
-      tags: params.tags ?? null,
+      content: params.content ?? current.content,
+      title: params.title ?? current.title,
+      description: params.description ?? current.description ?? '',
+      isPublished: params.isPublished ?? current.isPublished,
+      tags: params.tags ?? current.tags ?? [],
+      scriptCss: params.scriptCss ?? current.scriptCss ?? '',
+      scriptJs: params.scriptJs ?? current.scriptJs ?? '',
+      path: current.path,
+      locale: current.locale,
+      publishStartDate: current.publishStartDate ?? null,
+      publishEndDate: current.publishEndDate ?? null,
     };
 
     const data = await this.query<{
-      pages: {
-        update: {
-          responseResult: ApiResponseResult;
-        };
-      };
+      pages: { update: { responseResult: ApiResponseResult } };
     }>(query, variables);
-
-    if (!data.pages.update.responseResult.succeeded) {
-      throw new Error(`Failed to update page: ${data.pages.update.responseResult.message}`);
-    }
-
-    return data.pages.update.responseResult;
+    const result = data.pages.update.responseResult;
+    if (!result.succeeded) throw new Error(`Failed to update page: ${result.message}`);
+    return result;
   }
 
   /**
